@@ -1,6 +1,5 @@
 // ==========================================
-// EDRIAN BAYRON PORTFOLIO - YOUTUBE IFRAME API VERSION
-// Uses official YouTube API for quality control and playback
+// EDRIAN BAYRON PORTFOLIO - YOUTUBE IFRAME API WITH AUTOPLAY ON SCROLL
 // ==========================================
 
 // Load YouTube IFrame API
@@ -11,35 +10,20 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
 // Global players object
 let ytPlayers = {};
+let activePlayerId = null;
 
 function onYouTubeIframeAPIReady() {
-  // Initialize all video players after API loads
   initYouTubePlayers();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Initialize Lucide Icons
   lucide.createIcons();
-
-  // ========== AMBIENT PARTICLES ==========
   initParticles();
-
-  // ========== CUSTOM CURSOR ==========
   initCustomCursor();
-
-  // ========== NAVBAR SCROLL EFFECT ==========
   initNavbar();
-
-  // ========== SCROLL REVEAL ANIMATIONS ==========
   initScrollReveal();
-
-  // ========== COPY TO CLIPBOARD ==========
   initCopyButtons();
-
-  // ========== SMOOTH NAV SCROLLING ==========
   initSmoothNav();
-
-  // Note: YouTube players init via onYouTubeIframeAPIReady callback
 });
 
 // ==========================================
@@ -48,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function initYouTubePlayers() {
   const videoSections = document.querySelectorAll('[data-video-section]');
 
-  videoSections.forEach((section, index) => {
+  videoSections.forEach((section) => {
     const card = section.querySelector('[data-video-card]');
     const overlay = section.querySelector('[data-video-overlay]');
     const iframe = section.querySelector('iframe');
@@ -66,61 +50,42 @@ function initYouTubePlayers() {
         playsinline: 1,
         iv_load_policy: 3,
         fs: 1,
-        enablejsapi: 1,
-        origin: window.location.origin
+        enablejsapi: 1
       },
       events: {
         onReady: (event) => {
-          // Set highest available quality when ready
-          event.target.setPlaybackQuality('hd1080');
-          event.target.setPlaybackRate(1);
+          // Player is ready but don't autoplay yet — wait for scroll
         },
         onStateChange: (event) => {
-          // When video starts playing, force quality again
-          if (event.data === YT.PlayerState.PLAYING) {
-            event.target.setPlaybackQuality('hd1080');
-          }
-          // Update UI based on state
           updateCardUI(card, overlay, event.data);
         }
       }
     });
 
-    // Overlay click handler
+    // Overlay click handler — manual play/pause toggle
     overlay.addEventListener('click', (e) => {
       e.stopPropagation();
       e.preventDefault();
 
       const player = ytPlayers[playerId];
-      if (!player || !player.playVideo) return;
+      if (!player || !player.getPlayerState) return;
 
-      // Pause all other players first
-      Object.keys(ytPlayers).forEach(key => {
-        if (key !== playerId) {
-          const otherPlayer = ytPlayers[key];
-          if (otherPlayer && otherPlayer.pauseVideo) {
-            otherPlayer.pauseVideo();
-          }
-          // Reset other cards UI
-          const otherSection = document.querySelector(`[data-video-id="${otherPlayer.getVideoData ? otherPlayer.getVideoData().video_id : ''}"]`);
-          if (otherSection) {
-            const otherCard = otherSection.querySelector('[data-video-card]');
-            const otherOverlay = otherSection.querySelector('[data-video-overlay]');
-            if (otherCard) {
-              otherCard.classList.remove('playing');
-              otherCard.classList.add('is-paused');
-            }
-            if (otherOverlay) otherOverlay.style.opacity = '1';
-          }
-        }
-      });
+      const state = player.getPlayerState();
 
-      // Play this video
-      player.playVideo();
-      player.setPlaybackQuality('hd1080');
+      if (state === YT.PlayerState.PLAYING) {
+        // Pause this video
+        player.pauseVideo();
+        activePlayerId = null;
+      } else {
+        // Play this video — pause others first
+        pauseAllOtherPlayers(playerId);
+        player.playVideo();
+        player.setPlaybackQuality('hd1080');
+        activePlayerId = playerId;
+      }
     });
 
-    // Card click to pause (when not clicking overlay)
+    // Card click to pause (when clicking outside overlay but card is playing)
     card.addEventListener('click', (e) => {
       if (overlay.contains(e.target)) return;
 
@@ -130,12 +95,14 @@ function initYouTubePlayers() {
       const state = player.getPlayerState();
       if (state === YT.PlayerState.PLAYING) {
         player.pauseVideo();
+        activePlayerId = null;
       }
     });
   });
 
-  // Scroll observer to pause off-screen videos
-  const scrollObserver = new IntersectionObserver((entries) => {
+  // Scroll-based autoplay observer
+  // Triggers when video is centered in viewport (50% visibility threshold)
+  const autoplayObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       const section = entry.target;
       const iframe = section.querySelector('iframe');
@@ -144,13 +111,22 @@ function initYouTubePlayers() {
       const overlay = section.querySelector('[data-video-overlay]');
 
       if (!playerId || !ytPlayers[playerId]) return;
-
       const player = ytPlayers[playerId];
 
-      if (!entry.isIntersecting || entry.intersectionRatio < 0.3) {
-        // Section left viewport — pause
-        if (player && player.pauseVideo) {
+      if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+        // Video is centered in viewport — autoplay it
+        // Only if not already playing
+        if (player.getPlayerState && player.getPlayerState() !== YT.PlayerState.PLAYING) {
+          pauseAllOtherPlayers(playerId);
+          player.playVideo();
+          player.setPlaybackQuality('hd1080');
+          activePlayerId = playerId;
+        }
+      } else {
+        // Video scrolled away from center — pause it
+        if (player.pauseVideo && activePlayerId === playerId) {
           player.pauseVideo();
+          activePlayerId = null;
         }
         if (card) {
           card.classList.remove('playing');
@@ -160,12 +136,44 @@ function initYouTubePlayers() {
       }
     });
   }, {
-    threshold: [0, 0.3, 0.6]
+    threshold: [0, 0.25, 0.5, 0.75, 1.0],
+    rootMargin: '-10% 0px -10% 0px'  // Consider "center" as middle 80% of viewport
   });
 
-  videoSections.forEach(section => scrollObserver.observe(section));
+  videoSections.forEach(section => autoplayObserver.observe(section));
 }
 
+// ==========================================
+// HELPER: Pause all other players
+// ==========================================
+function pauseAllOtherPlayers(exceptPlayerId) {
+  Object.keys(ytPlayers).forEach(key => {
+    if (key !== exceptPlayerId) {
+      const otherPlayer = ytPlayers[key];
+      if (otherPlayer && otherPlayer.pauseVideo) {
+        otherPlayer.pauseVideo();
+      }
+      // Find and reset the card UI for this player
+      const otherIframe = document.getElementById(key);
+      if (otherIframe) {
+        const otherSection = otherIframe.closest('[data-video-section]');
+        if (otherSection) {
+          const otherCard = otherSection.querySelector('[data-video-card]');
+          const otherOverlay = otherSection.querySelector('[data-video-overlay]');
+          if (otherCard) {
+            otherCard.classList.remove('playing');
+            otherCard.classList.add('is-paused');
+          }
+          if (otherOverlay) otherOverlay.style.opacity = '1';
+        }
+      }
+    }
+  });
+}
+
+// ==========================================
+// HELPER: Update card UI based on player state
+// ==========================================
 function updateCardUI(card, overlay, playerState) {
   if (!card || !overlay) return;
 
