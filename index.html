@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edrian Bayron — Video Editor Portfolio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="style.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            matte: '#0D0D0D',
+            cyber: '#FF6B00',
+            'cyber-dim': '#cc5500',
+            charcoal: '#1F2937',
+            'charcoal-light': '#2a3548',
+          },
+          fontFamily: {
+            orbitron: ['Orbitron', 'sans-serif'],
+            syne: ['Syne', 'sans-serif'],
+            inter: ['Inter', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+<base target="_blank">
+</head>
+<body class="bg-matte text-white font-inter overflow-x-hidden">
+
+  <!-- AMBIENT PARTICLES CANVAS -->
+  <canvas id="particles-canvas"></canvas>
+
+  <!-- GRID OVERLAY -->
+  <div class="grid-overlay"></div>
+
+  <!-- CUSTOM CURSOR -->
+  <div id="custom-cursor" class="custom-cursor">
+    <span id="cursor-text" class="cursor-text">PLAY</span>
+  </div>
+
+  <!-- NAVIGATION -->
+  <nav id="navbar" class="fixed top-0 left-0 w-full z-50 transition-all duration-500">
+    <div class="max-w-7xl mx-auto px-6 md:px-10 flex items-center justify-between h-16 md:h-20">
+      <a href="#" class="font-orbitron font-bold text-sm md:text-lg tracking-wider text-white hover:text-cyber transition-colors duration-300">
+        EDRIAN BAYRON
+      </a>
+      <div class="flex items-center gap-6 md:gap-8">
+        <a href="#works" class="nav-link text-xs md:text-sm font-inter font-medium tracking-wide text-gray-400 hover:text-cyber transition-colors duration-300 uppercase">Works</a>
+        <a href="#about" class="nav-link text-xs md:text-sm font-inter font-medium tracking-wide text-gray-400 hover:text-cyber transition-colors duration-300 uppercase">About</a>
+        <a href="#contact" class="nav-link text-xs md:text-sm font-inter font-medium tracking-wide text-gray-400 hover:text-cyber transition-colors duration-300 uppercase">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main id="works" class="relative z-10">
+
+    <!-- HERO / PROFILE SECTION -->
+    <section class="min-h-screen flex flex-col justify-center items-center snap-start relative px-6 overflow-hidden" id="hero-section">
+      <!-- Background Video — YOUTUBE EMBED -->
+      <div class="hero-bg-video absolute inset-0 w-full h-full z-0">
+        <iframe
+          class="w-full h-full"
+          src="https://www.youtube.com/embed/GIVR8teRUz8?autoplay=1&mute=1&loop=1&playlist=GIVR8teRUz8&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1"
+          title="YouTube video player"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen
+          style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100vw; height: 100vh; object-fit: cover; pointer-events: none;"
+        ></iframe>
+      </div>
+      <!-- Dark Overlay for Readability -->
+      <div class="absolute inset-0 bg-matte/65 backdrop-blur-[2px] z-[1]"></div>
+
+      <div class="relative z-10 text-center reveal-up">
+        <div class="mx-auto mb-8 opacity-0 animate-fade-in flex justify-center">
+          <div class="w-44 h-44 md:w-56 md:h-56 lg:w-64 lg:h-64 overflow-hidden border-2 border-cyber/40 relative group flex items-center justify-center">
+            <img src="me.png" alt="Edrian Bayron" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+            <div class="absolute inset-0 bg-gradient-to-t from-cyber/15 to-transparent pointer-events-none"></div>
+          </div>
+        </div>
+        <p class="font-inter text-cyber text-xs md:text-sm tracking-[0.4em] uppercase mb-4 opacity-0 animate-fade-in-delay-1">Video Editor & Cinematic Storyteller</p>
+        <h1 class="font-orbitron font-black text-4xl md:text-6xl lg:text-8xl tracking-tight leading-none mb-4 opacity-0 animate-fade-in">
+          <span class="text-white">EDRIAN</span> <span class="text-cyber">BAYRON</span>
+        </h1>
+        <p class="font-inter text-gray-400 text-sm md:text-base max-w-lg mx-auto mb-6 opacity-0 animate-fade-in-delay-2">
+          19-year-old video editor specializing in <span class="text-cyber font-medium">Cinematic Documentary Editing</span> — docu-style, mini-documentary format grounded in authentic, journalistic visual storytelling.
+        </p>
+        <div class="flex flex-wrap justify-center gap-2 opacity-0 animate-fade-in-delay-3">
+          <span class="toolkit-badge">
+            <i data-lucide="film" class="w-3.5 h-3.5"></i>
+            Adobe Premiere Pro
+          </span>
+          <span class="toolkit-badge">
+            <i data-lucide="scissors" class="w-3.5 h-3.5"></i>
+            Wondershare Filmora
+          </span>
+          <span class="toolkit-badge">
+            <i data-lucide="clapperboard" class="w-3.5 h-3.5"></i>
+            CapCut
+          </span>
+        </div>
+      </div>
+
+      <div class="absolute bottom-10 z-10 flex flex-col items-center gap-2 opacity-0 animate-fade-in-delay-3">
+        <span class="text-gray-600 text-xs tracking-widest uppercase font-inter">Scroll to see works</span>
+        <div class="w-px h-10 bg-gradient-to-b from-cyber to-transparent animate-pulse-slow"></div>
+      </div>
+    </section>
+
+    <!-- VIDEO SLOT 1 — YOUTUBE EMBED -->
+    <section class="min-h-screen flex items-center justify-center snap-start relative px-4 md:px-10 py-10" data-video-section data-video-id="UyKeuMf732Q">
+      <div class="w-full max-w-6xl mx-auto reveal-up">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="w-8 h-px bg-cyber"></span>
+          <span class="font-orbitron text-cyber text-xs tracking-[0.3em] uppercase">01</span>
+        </div>
+        <h2 class="font-syne font-bold text-2xl md:text-4xl lg:text-5xl mb-2">Project 1: Cultural & Landscape B-Roll</h2>
+        <p class="font-inter text-gray-400 text-sm md:text-base mb-8 max-w-2xl">
+           Featuring local scenes, the Philippine tarsier, and traditional weaving with institutional color grading.
+        </p>
+        <div class="video-card rounded-xl overflow-hidden relative bg-charcoal border border-charcoal-light transition-all duration-500" data-video-card>
+          <div class="youtube-embed-wrapper w-full aspect-video relative">
+            <iframe
+              class="w-full h-full absolute inset-0"
+              src="https://www.youtube.com/embed/UyKeuMf732Q?enablejsapi=1&rel=0&modestbranding=1&playsinline=1"
+              title="Project 1: Cultural & Landscape B-Roll"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen
+            ></iframe>
+          </div>
+          <div class="video-overlay absolute inset-0 flex items-center justify-center bg-black/30 opacity-100 transition-opacity duration-500 z-10" data-video-overlay>
+            <div class="w-16 h-16 md:w-20 md:h-20 rounded-full border-2 border-cyber flex items-center justify-center bg-black/40 backdrop-blur-sm">
+              <i data-lucide="play" class="w-6 h-6 md:w-8 md:h-8 text-cyber ml-1"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIDEO SLOT 2 — YOUTUBE EMBED -->
+    <section class="min-h-screen flex items-center justify-center snap-start relative px-4 md:px-10 py-10" data-video-section data-video-id="Q7jsGCjryAE">
+      <div class="w-full max-w-6xl mx-auto reveal-up">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="w-8 h-px bg-cyber"></span>
+          <span class="font-orbitron text-cyber text-xs tracking-[0.3em] uppercase">02</span>
+        </div>
+        <h2 class="font-syne font-bold text-2xl md:text-4xl lg:text-5xl mb-2">Project 2:  Multi-Cam Narrative </h2>
+        <p class="font-inter text-gray-400 text-sm md:text-base mb-8 max-w-2xl">
+           Authentic journalistic storytelling, alternating between interviewer and contextual B-roll.
+        </p>
+        <div class="video-card rounded-xl overflow-hidden relative bg-charcoal border border-charcoal-light transition-all duration-500" data-video-card>
+          <div class="youtube-embed-wrapper w-full aspect-video relative">
+            <iframe
+              class="w-full h-full absolute inset-0"
+              src="https://www.youtube.com/embed/Q7jsGCjryAE?enablejsapi=1&rel=0&modestbranding=1&playsinline=1"
+              title="Project 2: Multi-Cam Narrative"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen
+            ></iframe>
+          </div>
+          <div class="video-overlay absolute inset-0 flex items-center justify-center bg-black/30 opacity-100 transition-opacity duration-500 z-10" data-video-overlay>
+            <div class="w-16 h-16 md:w-20 md:h-20 rounded-full border-2 border-cyber flex items-center justify-center bg-black/40 backdrop-blur-sm">
+              <i data-lucide="play" class="w-6 h-6 md:w-8 md:h-8 text-cyber ml-1"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIDEO SLOT 3 — YOUTUBE EMBED -->
+    <section class="min-h-screen flex items-center justify-center snap-start relative px-4 md:px-10 py-10" data-video-section data-video-id="_VS-7GrCZL8">
+      <div class="w-full max-w-6xl mx-auto reveal-up">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="w-8 h-px bg-cyber"></span>
+          <span class="font-orbitron text-cyber text-xs tracking-[0.3em] uppercase">03</span>
+        </div>
+        <h2 class="font-syne font-bold text-2xl md:text-4xl lg:text-5xl mb-2">Project 3: Docu-Style Mini Feature</h2>
+        <p class="font-inter text-gray-400 text-sm md:text-base mb-8 max-w-2xl">
+          Steady narrative pacing matched with clean text overlays.
+        </p>
+        <div class="video-card rounded-xl overflow-hidden relative bg-charcoal border border-charcoal-light transition-all duration-500" data-video-card>
+          <div class="youtube-embed-wrapper w-full aspect-video relative">
+            <iframe
+              class="w-full h-full absolute inset-0"
+              src="https://www.youtube.com/embed/_VS-7GrCZL8?enablejsapi=1&rel=0&modestbranding=1&playsinline=1"
+              title="Project 3: Docu-Style Mini Feature"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen
+            ></iframe>
+          </div>
+          <div class="video-overlay absolute inset-0 flex items-center justify-center bg-black/30 opacity-100 transition-opacity duration-500 z-10" data-video-overlay>
+            <div class="w-16 h-16 md:w-20 md:h-20 rounded-full border-2 border-cyber flex items-center justify-center bg-black/40 backdrop-blur-sm">
+              <i data-lucide="play" class="w-6 h-6 md:w-8 md:h-8 text-cyber ml-1"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIDEO SLOT 4 — YOUTUBE EMBED -->
+    <section class="min-h-screen flex items-center justify-center snap-start relative px-4 md:px-10 py-10" data-video-section data-video-id="gbpIxo2Ac94">
+      <div class="w-full max-w-6xl mx-auto reveal-up">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="w-8 h-px bg-cyber"></span>
+          <span class="font-orbitron text-cyber text-xs tracking-[0.3em] uppercase">04</span>
+        </div>
+        <h2 class="font-syne font-bold text-2xl md:text-4xl lg:text-5xl mb-2">Project 4: Cinematic Corporate Showcase</h2>
+        <p class="font-inter text-gray-400 text-sm md:text-base mb-8 max-w-2xl">
+          High-end institutional color grading and smooth audio-driven pacing.
+        </p>
+        <div class="video-card rounded-xl overflow-hidden relative bg-charcoal border border-charcoal-light transition-all duration-500" data-video-card>
+          <div class="youtube-embed-wrapper w-full aspect-video relative">
+            <iframe
+              class="w-full h-full absolute inset-0"
+              src="https://www.youtube.com/embed/gbpIxo2Ac94?enablejsapi=1&rel=0&modestbranding=1&playsinline=1"
+              title="Project 4: Cinematic Corporate Showcase"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen
+            ></iframe>
+          </div>
+          <div class="video-overlay absolute inset-0 flex items-center justify-center bg-black/30 opacity-100 transition-opacity duration-500 z-10" data-video-overlay>
+            <div class="w-16 h-16 md:w-20 md:h-20 rounded-full border-2 border-cyber flex items-center justify-center bg-black/40 backdrop-blur-sm">
+              <i data-lucide="play" class="w-6 h-6 md:w-8 md:h-8 text-cyber ml-1"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT SECTION -->
+    <section id="about" class="min-h-screen flex items-center justify-center snap-start relative px-4 md:px-10 py-20">
+      <div class="w-full max-w-5xl mx-auto reveal-up">
+        <div class="flex items-center gap-3 mb-10">
+          <span class="w-8 h-px bg-cyber"></span>
+          <span class="font-orbitron text-cyber text-xs tracking-[0.3em] uppercase">About</span>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+          <div class="flex flex-col items-center lg:items-start">
+            <div class="w-64 h-64 md:w-80 md:h-80 overflow-hidden border-2 border-cyber/40 relative mb-6 group">
+              <img src="me.png" alt="Edrian Bayron" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+              <div class="absolute inset-0 bg-gradient-to-t from-cyber/15 to-transparent pointer-events-none"></div>
+            </div>
+            <h3 class="font-orbitron font-bold text-xl md:text-2xl text-white">Edrian Bayron</h3>
+            <p class="font-inter text-cyber text-sm mt-1 tracking-wide">Cinematic Documentary Editor</p>
+          </div>
+          <div class="flex flex-col justify-center">
+            <h4 class="font-syne font-bold text-lg md:text-xl text-white mb-4">19-Year-Old Visual Storyteller</h4>
+            <p class="font-inter text-gray-400 text-sm md:text-base leading-relaxed mb-6">
+              I specialize in <span class="text-cyber font-medium">Cinematic Documentary Editing</span> — the docu-style, mini-documentary format that prioritizes authentic, journalistic visual storytelling. Rather than loud social media graphics, my work is grounded in real narratives, honest pacing, and intentional color grading that serves the story.
+            </p>
+            <p class="font-inter text-gray-400 text-sm md:text-base leading-relaxed mb-8">
+              Every frame is a decision. Every cut has purpose. I craft documentaries, institutional features, and narrative pieces that feel genuine — because great editing should be <span class="text-white font-medium">invisible but felt</span>.
+            </p>
+            <div class="mb-8">
+              <p class="font-inter text-xs text-gray-500 uppercase tracking-widest mb-3">Software Toolkit</p>
+              <div class="flex flex-wrap gap-2">
+                <span class="toolkit-badge">
+                  <i data-lucide="film" class="w-3.5 h-3.5"></i>
+                  Adobe Premiere Pro
+                </span>
+                <span class="toolkit-badge">
+                  <i data-lucide="scissors" class="w-3.5 h-3.5"></i>
+                  Wondershare Filmora
+                </span>
+                <span class="toolkit-badge">
+                  <i data-lucide="clapperboard" class="w-3.5 h-3.5"></i>
+                  CapCut
+                </span>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-3">
+              <span class="px-4 py-2 rounded-full bg-charcoal border border-charcoal-light text-gray-300 text-xs font-inter tracking-wide">Docu-Style Editing</span>
+              <span class="px-4 py-2 rounded-full bg-charcoal border border-charcoal-light text-gray-300 text-xs font-inter tracking-wide">Multi-Cam Narrative</span>
+              <span class="px-4 py-2 rounded-full bg-charcoal border border-charcoal-light text-gray-300 text-xs font-inter tracking-wide">Color Grading</span>
+              <span class="px-4 py-2 rounded-full bg-charcoal border border-charcoal-light text-gray-300 text-xs font-inter tracking-wide">Audio-Driven Pacing</span>
+              <span class="px-4 py-2 rounded-full bg-charcoal border border-charcoal-light text-gray-300 text-xs font-inter tracking-wide">B-Roll Direction</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT SECTION -->
+    <section id="contact" class="min-h-screen flex items-center justify-center snap-start relative px-4 md:px-10 py-20">
+      <div class="w-full max-w-4xl mx-auto reveal-up">
+        <div class="flex items-center gap-3 mb-10">
+          <span class="w-8 h-px bg-cyber"></span>
+          <span class="font-orbitron text-cyber text-xs tracking-[0.3em] uppercase">Contact</span>
+        </div>
+        <h2 class="font-syne font-bold text-3xl md:text-5xl lg:text-6xl text-white mb-4">Let's Work<br/><span class="text-cyber">Together</span></h2>
+        <p class="font-inter text-gray-500 text-sm md:text-base mb-12 max-w-lg">
+          Have a documentary, institutional feature, or narrative project? I'd love to bring your vision to life through intentional editing.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+          <div class="contact-card group" data-copy="driyannnnni@gmail.com" data-copy-type="Email">
+            <div class="flex items-start justify-between mb-6">
+              <div class="w-12 h-12 rounded-xl bg-charcoal border border-cyber/30 flex items-center justify-center group-hover:border-cyber group-hover:bg-cyber/10 transition-all duration-300">
+                <i data-lucide="mail" class="w-5 h-5 text-cyber"></i>
+              </div>
+              <button class="copy-btn px-3 py-1.5 rounded-lg bg-charcoal border border-charcoal-light text-xs font-inter text-gray-400 hover:border-cyber hover:text-cyber transition-all duration-300 flex items-center gap-1.5" aria-label="Copy email">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                <span>Copy</span>
+              </button>
+            </div>
+            <p class="font-inter text-xs text-gray-500 mb-1 tracking-widest uppercase">Email</p>
+            <p class="font-inter text-sm md:text-base text-white break-all">driyannnnni@gmail.com</p>
+          </div>
+          <div class="contact-card group" data-copy="09704856549" data-copy-type="Phone">
+            <div class="flex items-start justify-between mb-6">
+              <div class="w-12 h-12 rounded-xl bg-charcoal border border-cyber/30 flex items-center justify-center group-hover:border-cyber group-hover:bg-cyber/10 transition-all duration-300">
+                <i data-lucide="phone" class="w-5 h-5 text-cyber"></i>
+              </div>
+              <button class="copy-btn px-3 py-1.5 rounded-lg bg-charcoal border border-charcoal-light text-xs font-inter text-gray-400 hover:border-cyber hover:text-cyber transition-all duration-300 flex items-center gap-1.5" aria-label="Copy phone">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                <span>Copy</span>
+              </button>
+            </div>
+            <p class="font-inter text-xs text-gray-500 mb-1 tracking-widest uppercase">Phone (Philippines)</p>
+            <p class="font-inter text-sm md:text-base text-white">09704856549</p>
+          </div>
+        </div>
+        <div class="mt-20 pt-8 border-t border-charcoal-light flex flex-col md:flex-row items-center justify-between gap-4">
+          <p class="font-inter text-xs text-gray-600">© 2025 Edrian Bayron. All rights reserved.</p>
+          <p class="font-inter text-xs text-gray-600">Crafted with intention & purpose.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="toast">
+    <i data-lucide="check-circle" class="w-4 h-4"></i>
+    <span id="toast-message" class="font-inter text-sm"></span>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
