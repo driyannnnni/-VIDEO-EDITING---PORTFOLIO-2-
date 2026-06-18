@@ -121,6 +121,15 @@ function initYouTubePlayers() {
           player.playVideo();
           player.setPlaybackQuality('hd1080');
           activePlayerId = playerId;
+          // Force overlay to hide immediately when autoplay starts
+          if (card) {
+            card.classList.add('playing');
+            card.classList.remove('is-paused');
+          }
+          if (overlay) {
+            overlay.style.opacity = '0';
+            overlay.style.pointerEvents = 'none';
+          }
         }
       } else {
         // Video scrolled away from center — pause it
@@ -132,7 +141,10 @@ function initYouTubePlayers() {
           card.classList.remove('playing');
           card.classList.add('is-paused');
         }
-        if (overlay) overlay.style.opacity = '1';
+        if (overlay) {
+          overlay.style.opacity = '1';
+          overlay.style.pointerEvents = 'auto';
+        }
       }
     });
   }, {
@@ -164,7 +176,10 @@ function pauseAllOtherPlayers(exceptPlayerId) {
             otherCard.classList.remove('playing');
             otherCard.classList.add('is-paused');
           }
-          if (otherOverlay) otherOverlay.style.opacity = '1';
+          if (otherOverlay) {
+            otherOverlay.style.opacity = '1';
+            otherOverlay.style.pointerEvents = 'auto';
+          }
         }
       }
     }
@@ -181,10 +196,12 @@ function updateCardUI(card, overlay, playerState) {
     card.classList.add('playing');
     card.classList.remove('is-paused');
     overlay.style.opacity = '0';
+    overlay.style.pointerEvents = 'none';
   } else if (playerState === YT.PlayerState.PAUSED || playerState === YT.PlayerState.ENDED) {
     card.classList.remove('playing');
     card.classList.add('is-paused');
     overlay.style.opacity = '1';
+    overlay.style.pointerEvents = 'auto';
   }
 }
 
