@@ -278,7 +278,7 @@ function initParticles() {
 }
 
 // ==========================================
-// CUSTOM CURSOR
+// CUSTOM CURSOR - FIXED VERSION
 // ==========================================
 function initCustomCursor() {
   const cursor = document.getElementById('custom-cursor');
@@ -287,43 +287,58 @@ function initCustomCursor() {
 
   let cursorX = 0, cursorY = 0;
   let currentX = 0, currentY = 0;
+  let isActive = true;
+  let rafId = null;
 
   document.addEventListener('mousemove', (e) => {
     cursorX = e.clientX;
     cursorY = e.clientY;
     cursor.classList.add('visible');
+    isActive = true;
   });
+
   document.addEventListener('mouseleave', () => {
     cursor.classList.remove('visible');
+    isActive = false;
   });
 
-  const videoCards = document.querySelectorAll('[data-video-card]');
-  videoCards.forEach(card => {
-    card.addEventListener('mouseenter', () => {
+  document.addEventListener('mouseenter', () => {
+    cursor.classList.add('visible');
+    isActive = true;
+  });
+
+  // Expand cursor on video cards and contact cards
+  const expandTargets = document.querySelectorAll('[data-video-card], .contact-card');
+  expandTargets.forEach(target => {
+    target.addEventListener('mouseenter', () => {
       cursor.classList.add('expanded');
     });
-    card.addEventListener('mouseleave', () => {
+    target.addEventListener('mouseleave', () => {
       cursor.classList.remove('expanded');
     });
   });
 
-  const contactCards = document.querySelectorAll('.contact-card');
-  contactCards.forEach(card => {
-    card.addEventListener('mouseenter', () => {
-      cursor.classList.add('expanded');
-    });
-    card.addEventListener('mouseleave', () => {
-      cursor.classList.remove('expanded');
-    });
-  });
-
+  // Use direct position updates with slight smoothing
+  // Higher lerp factor = less lag, more responsive
   function updateCursor() {
-    currentX += (cursorX - currentX) * 0.15;
-    currentY += (cursorY - currentY) * 0.15;
-    cursor.style.left = currentX + 'px';
-    cursor.style.top = currentY + 'px';
-    requestAnimationFrame(updateCursor);
+    if (!isActive) {
+      rafId = requestAnimationFrame(updateCursor);
+      return;
+    }
+
+    // Faster lerp (0.35 instead of 0.15) for tighter tracking
+    currentX += (cursorX - currentX) * 0.35;
+    currentY += (cursorY - currentY) * 0.35;
+
+    // Apply transform directly - no translate(-50%, -50%) in JS
+    // The CSS handles the centering offset
+    cursor.style.transform = `translate(${currentX}px, ${currentY}px) translate(-50%, -50%)`;
+
+    rafId = requestAnimationFrame(updateCursor);
   }
+
+  // Cancel any existing animation frame before starting
+  if (rafId) cancelAnimationFrame(rafId);
   updateCursor();
 }
 
