@@ -1,19 +1,18 @@
 // ==========================================
-// EDRIAN BAYRON PORTFOLIO - YOUTUBE IFRAME API WITH HIGH QUALITY BACKGROUND
+// EDRIAN BAYRON PORTFOLIO - YOUTUBE EMBED VERSION
+// Hero: iframe with quality params | Projects: API with autoplay on scroll
 // ==========================================
 
-// Load YouTube IFrame API
+// Load YouTube IFrame API for project videos only
 const tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
 const firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-// Global players object
 let ytPlayers = {};
 let activePlayerId = null;
 
 function onYouTubeIframeAPIReady() {
-  initHeroPlayer();
   initYouTubePlayers();
 }
 
@@ -26,51 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initCopyButtons();
   initSmoothNav();
 });
-
-// ==========================================
-// HERO BACKGROUND PLAYER - FORCES HIGH QUALITY
-// ==========================================
-function initHeroPlayer() {
-  const heroIframe = document.getElementById('hero-iframe');
-  if (!heroIframe) return;
-
-  // Replace the simple iframe with a controlled YT.Player
-  // This allows us to set playback quality programmatically
-  ytPlayers['hero'] = new YT.Player('hero-iframe', {
-    videoId: 'GIVR8teRUz8',
-    playerVars: {
-      autoplay: 1,
-      mute: 1,
-      loop: 1,
-      playlist: 'GIVR8teRUz8',
-      controls: 0,
-      showinfo: 0,
-      rel: 0,
-      modestbranding: 1,
-      playsinline: 1,
-      iv_load_policy: 3,
-      fs: 0,
-      enablejsapi: 1
-    },
-    events: {
-      onReady: (event) => {
-        // Force highest quality immediately when player loads
-        event.target.setPlaybackQuality('hd1080');
-        event.target.playVideo();
-      },
-      onStateChange: (event) => {
-        // Re-apply quality when video loops or changes state
-        if (event.data === YT.PlayerState.PLAYING) {
-          event.target.setPlaybackQuality('hd1080');
-        }
-        // If video ended (shouldn't happen with loop, but just in case), restart
-        if (event.data === YT.PlayerState.ENDED) {
-          event.target.playVideo();
-        }
-      }
-    }
-  });
-}
 
 // ==========================================
 // PROJECT VIDEO PLAYERS
@@ -190,7 +144,7 @@ function initYouTubePlayers() {
 
 function pauseAllOtherPlayers(exceptPlayerId) {
   Object.keys(ytPlayers).forEach(key => {
-    if (key === 'hero' || key === exceptPlayerId) return;
+    if (key === exceptPlayerId) return;
     const otherPlayer = ytPlayers[key];
     if (otherPlayer && otherPlayer.pauseVideo) {
       otherPlayer.pauseVideo();
