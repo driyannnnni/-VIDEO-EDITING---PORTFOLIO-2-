@@ -59,19 +59,22 @@ body {
 /* ========== CUSTOM CURSOR ========== */
 .custom-cursor {
   position: fixed;
+  top: 0;
+  left: 0;
   width: 16px;
   height: 16px;
   border-radius: 50%;
   background: #FF6B00;
   pointer-events: none;
   z-index: 9999;
-  transform: translate(-50%, -50%);
-  transition: width 0.3s ease, height 0.3s ease, background 0.3s ease, opacity 0.3s ease;
+  transform: translate(-50%, -50%) scale(1);
+  transition: width 0.25s ease, height 0.25s ease, background 0.25s ease, opacity 0.25s ease, transform 0.1s linear;
   mix-blend-mode: difference;
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0;
+  will-change: transform, width, height;
 }
 
 .custom-cursor.visible {
@@ -84,6 +87,7 @@ body {
   background: rgba(255, 107, 0, 0.15);
   border: 2px solid #FF6B00;
   mix-blend-mode: normal;
+  transform: translate(-50%, -50%) scale(1);
 }
 
 .cursor-text {
@@ -94,6 +98,9 @@ body {
   color: #FF6B00;
   letter-spacing: 3px;
   animation: pulse-text 1.5s ease-in-out infinite;
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
 }
 
 .custom-cursor.expanded .cursor-text {
@@ -311,7 +318,7 @@ body {
 /* ========== RESPONSIVE ========== */
 @media (max-width: 768px) {
   .custom-cursor {
-    display: none;
+    display: none !important;
   }
   .contact-card {
     padding: 1.25rem;
