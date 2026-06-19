@@ -1,5 +1,5 @@
 // ==========================================
-// EDRIAN BAYRON PORTFOLIO - YOUTUBE IFRAME API WITH AUTOPLAY ON SCROLL
+// EDRIAN BAYRON PORTFOLIO - YOUTUBE IFRAME API WITH HIGH QUALITY BACKGROUND
 // ==========================================
 
 // Load YouTube IFrame API
@@ -13,6 +13,7 @@ let ytPlayers = {};
 let activePlayerId = null;
 
 function onYouTubeIframeAPIReady() {
+  initHeroPlayer();
   initYouTubePlayers();
 }
 
@@ -27,7 +28,52 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ==========================================
-// YOUTUBE PLAYER INITIALIZATION
+// HERO BACKGROUND PLAYER - FORCES HIGH QUALITY
+// ==========================================
+function initHeroPlayer() {
+  const heroIframe = document.getElementById('hero-iframe');
+  if (!heroIframe) return;
+
+  // Replace the simple iframe with a controlled YT.Player
+  // This allows us to set playback quality programmatically
+  ytPlayers['hero'] = new YT.Player('hero-iframe', {
+    videoId: 'GIVR8teRUz8',
+    playerVars: {
+      autoplay: 1,
+      mute: 1,
+      loop: 1,
+      playlist: 'GIVR8teRUz8',
+      controls: 0,
+      showinfo: 0,
+      rel: 0,
+      modestbranding: 1,
+      playsinline: 1,
+      iv_load_policy: 3,
+      fs: 0,
+      enablejsapi: 1
+    },
+    events: {
+      onReady: (event) => {
+        // Force highest quality immediately when player loads
+        event.target.setPlaybackQuality('hd1080');
+        event.target.playVideo();
+      },
+      onStateChange: (event) => {
+        // Re-apply quality when video loops or changes state
+        if (event.data === YT.PlayerState.PLAYING) {
+          event.target.setPlaybackQuality('hd1080');
+        }
+        // If video ended (shouldn't happen with loop, but just in case), restart
+        if (event.data === YT.PlayerState.ENDED) {
+          event.target.playVideo();
+        }
+      }
+    }
+  });
+}
+
+// ==========================================
+// PROJECT VIDEO PLAYERS
 // ==========================================
 function initYouTubePlayers() {
   const videoSections = document.querySelectorAll('[data-video-section]');
@@ -41,7 +87,6 @@ function initYouTubePlayers() {
 
     if (!card || !overlay || !iframe || !videoId || !playerId) return;
 
-    // Create YouTube player instance
     ytPlayers[playerId] = new YT.Player(playerId, {
       videoId: videoId,
       playerVars: {
@@ -53,16 +98,13 @@ function initYouTubePlayers() {
         enablejsapi: 1
       },
       events: {
-        onReady: (event) => {
-          // Player is ready but don't autoplay yet — wait for scroll
-        },
+        onReady: () => {},
         onStateChange: (event) => {
           updateCardUI(card, overlay, event.data);
         }
       }
     });
 
-    // Overlay click handler — manual play/pause toggle
     overlay.addEventListener('click', (e) => {
       e.stopPropagation();
       e.preventDefault();
@@ -73,11 +115,9 @@ function initYouTubePlayers() {
       const state = player.getPlayerState();
 
       if (state === YT.PlayerState.PLAYING) {
-        // Pause this video
         player.pauseVideo();
         activePlayerId = null;
       } else {
-        // Play this video — pause others first
         pauseAllOtherPlayers(playerId);
         player.playVideo();
         player.setPlaybackQuality('hd1080');
@@ -85,7 +125,6 @@ function initYouTubePlayers() {
       }
     });
 
-    // Card click to pause (when clicking outside overlay but card is playing)
     card.addEventListener('click', (e) => {
       if (overlay.contains(e.target)) return;
 
@@ -100,8 +139,6 @@ function initYouTubePlayers() {
     });
   });
 
-  // Scroll-based autoplay observer
-  // Triggers when video is centered in viewport (50% visibility threshold)
   const autoplayObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       const section = entry.target;
@@ -114,14 +151,11 @@ function initYouTubePlayers() {
       const player = ytPlayers[playerId];
 
       if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
-        // Video is centered in viewport — autoplay it
-        // Only if not already playing
         if (player.getPlayerState && player.getPlayerState() !== YT.PlayerState.PLAYING) {
           pauseAllOtherPlayers(playerId);
           player.playVideo();
           player.setPlaybackQuality('hd1080');
           activePlayerId = playerId;
-          // Force overlay to hide immediately when autoplay starts
           if (card) {
             card.classList.add('playing');
             card.classList.remove('is-paused');
@@ -132,7 +166,6 @@ function initYouTubePlayers() {
           }
         }
       } else {
-        // Video scrolled away from center — pause it
         if (player.pauseVideo && activePlayerId === playerId) {
           player.pauseVideo();
           activePlayerId = null;
@@ -149,49 +182,40 @@ function initYouTubePlayers() {
     });
   }, {
     threshold: [0, 0.25, 0.5, 0.75, 1.0],
-    rootMargin: '-10% 0px -10% 0px'  // Consider "center" as middle 80% of viewport
+    rootMargin: '-10% 0px -10% 0px'
   });
 
   videoSections.forEach(section => autoplayObserver.observe(section));
 }
 
-// ==========================================
-// HELPER: Pause all other players
-// ==========================================
 function pauseAllOtherPlayers(exceptPlayerId) {
   Object.keys(ytPlayers).forEach(key => {
-    if (key !== exceptPlayerId) {
-      const otherPlayer = ytPlayers[key];
-      if (otherPlayer && otherPlayer.pauseVideo) {
-        otherPlayer.pauseVideo();
-      }
-      // Find and reset the card UI for this player
-      const otherIframe = document.getElementById(key);
-      if (otherIframe) {
-        const otherSection = otherIframe.closest('[data-video-section]');
-        if (otherSection) {
-          const otherCard = otherSection.querySelector('[data-video-card]');
-          const otherOverlay = otherSection.querySelector('[data-video-overlay]');
-          if (otherCard) {
-            otherCard.classList.remove('playing');
-            otherCard.classList.add('is-paused');
-          }
-          if (otherOverlay) {
-            otherOverlay.style.opacity = '1';
-            otherOverlay.style.pointerEvents = 'auto';
-          }
+    if (key === 'hero' || key === exceptPlayerId) return;
+    const otherPlayer = ytPlayers[key];
+    if (otherPlayer && otherPlayer.pauseVideo) {
+      otherPlayer.pauseVideo();
+    }
+    const otherIframe = document.getElementById(key);
+    if (otherIframe) {
+      const otherSection = otherIframe.closest('[data-video-section]');
+      if (otherSection) {
+        const otherCard = otherSection.querySelector('[data-video-card]');
+        const otherOverlay = otherSection.querySelector('[data-video-overlay]');
+        if (otherCard) {
+          otherCard.classList.remove('playing');
+          otherCard.classList.add('is-paused');
+        }
+        if (otherOverlay) {
+          otherOverlay.style.opacity = '1';
+          otherOverlay.style.pointerEvents = 'auto';
         }
       }
     }
   });
 }
 
-// ==========================================
-// HELPER: Update card UI based on player state
-// ==========================================
 function updateCardUI(card, overlay, playerState) {
   if (!card || !overlay) return;
-
   if (playerState === YT.PlayerState.PLAYING) {
     card.classList.add('playing');
     card.classList.remove('is-paused');
@@ -222,9 +246,7 @@ function initParticles() {
   window.addEventListener('resize', resize);
 
   class Particle {
-    constructor() {
-      this.reset();
-    }
+    constructor() { this.reset(); }
     reset() {
       this.x = Math.random() * canvas.width;
       this.y = Math.random() * canvas.height;
@@ -247,9 +269,7 @@ function initParticles() {
     }
   }
 
-  for (let i = 0; i < PARTICLE_COUNT; i++) {
-    particles.push(new Particle());
-  }
+  for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
 
   function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -268,17 +288,14 @@ function initParticles() {
         }
       }
     }
-    particles.forEach(p => {
-      p.update();
-      p.draw();
-    });
+    particles.forEach(p => { p.update(); p.draw(); });
     requestAnimationFrame(animate);
   }
   animate();
 }
 
 // ==========================================
-// CUSTOM CURSOR - FIXED VERSION
+// CUSTOM CURSOR
 // ==========================================
 function initCustomCursor() {
   const cursor = document.getElementById('custom-cursor');
@@ -296,48 +313,28 @@ function initCustomCursor() {
     cursor.classList.add('visible');
     isActive = true;
   });
-
   document.addEventListener('mouseleave', () => {
     cursor.classList.remove('visible');
     isActive = false;
   });
-
   document.addEventListener('mouseenter', () => {
     cursor.classList.add('visible');
     isActive = true;
   });
 
-  // Expand cursor on video cards and contact cards
   const expandTargets = document.querySelectorAll('[data-video-card], .contact-card');
   expandTargets.forEach(target => {
-    target.addEventListener('mouseenter', () => {
-      cursor.classList.add('expanded');
-    });
-    target.addEventListener('mouseleave', () => {
-      cursor.classList.remove('expanded');
-    });
+    target.addEventListener('mouseenter', () => cursor.classList.add('expanded'));
+    target.addEventListener('mouseleave', () => cursor.classList.remove('expanded'));
   });
 
-  // Use direct position updates with slight smoothing
-  // Higher lerp factor = less lag, more responsive
   function updateCursor() {
-    if (!isActive) {
-      rafId = requestAnimationFrame(updateCursor);
-      return;
-    }
-
-    // Faster lerp (0.35 instead of 0.15) for tighter tracking
+    if (!isActive) { rafId = requestAnimationFrame(updateCursor); return; }
     currentX += (cursorX - currentX) * 0.35;
     currentY += (cursorY - currentY) * 0.35;
-
-    // Apply transform directly - no translate(-50%, -50%) in JS
-    // The CSS handles the centering offset
     cursor.style.transform = `translate(${currentX}px, ${currentY}px) translate(-50%, -50%)`;
-
     rafId = requestAnimationFrame(updateCursor);
   }
-
-  // Cancel any existing animation frame before starting
   if (rafId) cancelAnimationFrame(rafId);
   updateCursor();
 }
@@ -349,11 +346,8 @@ function initNavbar() {
   const navbar = document.getElementById('navbar');
   if (!navbar) return;
   window.addEventListener('scroll', () => {
-    if (window.scrollY > 50) {
-      navbar.classList.add('scrolled');
-    } else {
-      navbar.classList.remove('scrolled');
-    }
+    if (window.scrollY > 50) navbar.classList.add('scrolled');
+    else navbar.classList.remove('scrolled');
   });
 }
 
@@ -369,10 +363,7 @@ function initScrollReveal() {
         observer.unobserve(entry.target);
       }
     });
-  }, {
-    threshold: 0.15,
-    rootMargin: '0px 0px -50px 0px'
-  });
+  }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
   reveals.forEach(el => observer.observe(el));
 }
 
@@ -432,9 +423,7 @@ function initCopyButtons() {
     if (!toast || !toastMessage) return;
     toastMessage.textContent = message;
     toast.classList.add('show');
-    setTimeout(() => {
-      toast.classList.remove('show');
-    }, 3000);
+    setTimeout(() => toast.classList.remove('show'), 3000);
   }
 }
 
@@ -448,12 +437,7 @@ function initSmoothNav() {
       e.preventDefault();
       const targetId = link.getAttribute('href');
       const target = document.querySelector(targetId);
-      if (target) {
-        target.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start'
-        });
-      }
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   });
 }
